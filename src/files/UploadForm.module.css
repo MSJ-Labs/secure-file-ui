@@ -1,0 +1,10 @@
+.upload { margin: 16px 0; }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.progress progress { flex: 1; min-width: 160px; }

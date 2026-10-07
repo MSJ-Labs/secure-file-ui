@@ -14,7 +14,21 @@ Decisions taken (author's questions, answers and corrections):
 - The browser talks to the dev server only: `/api` is proxied to the backend (`http://localhost:8080`, the port of the compose), so the `HttpOnly` `SameSite=Strict` cookies are same-site and travel with every call, without CORS configuration.
 - The proxy exists in the dev server only. A production deployment needs a reverse proxy that serves the build and forwards `/api`; this is documented as an improvement, not built.
 
-## Prompt 2 — Authentication
+## Prompt 2 — Styling rules
+
+~~~~text
+Before we build any page, let's set the styling rules, without pulling in heavy libraries like Tailwind or styled-components:
+1. Use CSS Modules (*.module.css), scoped per component.
+2. Keep global CSS variables in src/index.css for the color tokens (support light/dark mode).
+3. Use lightweight inline SVGs for the icons, instead of installing an external icon package.
+~~~~
+
+Decisions taken (author's questions, answers and corrections):
+- CSS Modules: one `*.module.css` next to each component, scoped by Vite, no dependency. What several features share (card, error message, links) is in `shared/ui.module.css`. Tailwind and styled-components were considered and not chosen for a project this small.
+- `src/index.css` only holds the color tokens (light theme, dark theme through `prefers-color-scheme`) and the base look of plain elements.
+- Icons are drawn as inline SVG components in `shared/icons.tsx`, no icon library.
+
+## Prompt 3 — Authentication
 
 ~~~~text
 Now we implement auth. The backend habndles auth via HttpOnly cookies.
@@ -32,7 +46,7 @@ Decisions taken (author's questions, answers and corrections):
 - Refreshing "when the token is about to expire" was not built: it needs the expiry, which the page cannot read, and the API does not return it. It would need `expiresAt` in the login and refresh answers; kept as an improvement.
 - A 401 that survives the refresh ends the session: the query cache of the session is set to `null` and the route guard sends the user back to the sign-in page.
 
-## Prompt 3 — The files list and its polling
+## Prompt 4 — The files list and its polling
 
 ~~~~text
 Let's work on the main Files view (/files).
@@ -47,3 +61,22 @@ Decisions taken (author's questions, answers and corrections):
 - One badge per status, with a label that a user understands ("Waiting for scan", "Safe", "Infected"…), and a color only for the outcomes: green for safe, red for infected and failures.
 - The download is a plain link to `GET /api/v1/files/{id}/content`, shown only for `CLEAN` files: the cookies travel with it and the API serves an attachment, so the browser streams it to disk without the page holding the file in memory. The API refuses the other files anyway (409).
 - The list is polled, not pushed: no WebSocket, since the API has no push channel and the scans run in workers that may live on other instances.
+
+## Prompt 5 — Upload with progress
+
+~~~~text
+Let's add file uploads.
+
+The API requires a PUT /api/v1/files?name=... request where the raw file payload is passed in the body. Since fetch doesn't support upload progress callbacks easily, let's use XMLHttpRequest so we can give the user a progress bar and a Cancel button.
+
+Keep it to one upload at a time. If the backend returns a 411 Length Required or 413 Payload Too Large, render the raw backend error message directly on screen. If the access token has expired meanwhile, refresh it once like for the other calls.
+~~~~
+
+Decisions taken (author's questions, answers and corrections):
+- The `File` itself is the body of the `PUT` request: the browser streams it from disk (the page never reads it in memory) and sets `Content-Length`, which the API needs to know the size up front. The name goes in the query string, URL-encoded.
+- `XMLHttpRequest` for the progress bar (`fetch` cannot report an upload). The bar reaches 100% when the browser has sent the bytes, before the API has finished storing the file, so the label then changes to "Storing the file…".
+- Cancel aborts the request (an `AbortController`). A cancelled upload is not an error to display. The file the API had already started to receive is left in a failed state on its side and shows in the list.
+- One upload at a time: the "Add file" button is disabled while one runs.
+- The message of the API (411, 413, ...) is displayed as it is: it is the one that knows the limit, the page does not duplicate it.
+- An expired access token is refreshed once (the same shared refresh as the other calls) and the upload is sent again, since the XMLHttpRequest does not go through the HTTP client.
+- When the upload succeeds, the list query is invalidated: the new file is already `PENDING` on the server, so it shows up and the status polling starts again.
