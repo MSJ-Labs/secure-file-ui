@@ -1,9 +1,10 @@
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query'
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { logout } from './auth/api'
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AppLayout } from './AppLayout'
 import { LoginPage } from './auth/LoginPage'
+import { ProfilePage } from './auth/ProfilePage'
 import { RequireAuth } from './auth/RequireAuth'
-import { ME_KEY, useMe } from './auth/useMe'
+import { ME_KEY } from './auth/useMe'
 import { FilesPage } from './files/FilesPage'
 import { ApiError } from './shared/http'
 
@@ -18,24 +19,6 @@ const queryClient = new QueryClient({
   mutationCache: new MutationCache({ onError: endSessionOnUnauthorized }),
 })
 
-// Placeholder until the shared header: it shows who is signed in and lets one sign out.
-function SessionBar() {
-  const { data: user } = useMe()
-  const client = useQueryClient()
-  const signOut = async () => {
-    await logout()
-    client.setQueryData(ME_KEY, null)
-  }
-
-  return (
-    <>
-      <p>Signed in as {user?.fullName}.</p>
-      <button type="button" onClick={signOut}>Sign out</button>
-      <Outlet />
-    </>
-  )
-}
-
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -43,8 +26,9 @@ export function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route element={<RequireAuth />}>
-            <Route element={<SessionBar />}>
+            <Route element={<AppLayout />}>
               <Route path="/files" element={<FilesPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/" element={<Navigate to="/files" replace />} />
             </Route>
           </Route>

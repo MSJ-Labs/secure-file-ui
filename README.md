@@ -1,6 +1,6 @@
 # secure-file-ui
 
-Web interface of the [secure-file-service](https://github.com/<account>/secure-file-service) API: sign in, send files, follow
+Web interface of the [secure-file-service](https://github.com/MSJ-Labs/secure-file-service) API: sign in, send files, follow
 their antivirus scan and download them once they are safe.
 
 React 19, TypeScript, Vite, TanStack Query and React Router.
@@ -10,6 +10,9 @@ React 19, TypeScript, Vite, TanStack Query and React Router.
 - **Sign in / create an account.** The session lives in HttpOnly cookies set by the API, so the page never sees a token.
   "Who am I" is a query on `/api/v1/users/me`. An expired access token is refreshed once, automatically, and the call is
   retried; when the refresh fails too, the session is over and the user is sent back to the sign-in page.
+- **Navigation.** Two tabs, Files and Profile, are real routes (`/files`, `/profile`) under a shared header. Profile
+  shows the data of the signed-in user. Signing out clears everything cached for the session and goes back to the
+  sign-in page.
 - **Upload.** The file is the body of a `PUT /api/v1/files?name=…` request, streamed from disk by the browser, with a
   progress bar and a cancel button. The API refuses a body of unknown length (411) or above its limit (413); the message
   is shown as is.
@@ -40,8 +43,9 @@ One folder per feature, like the API's bounded contexts:
 ```
 src/
 ├── App.tsx, main.tsx   routes and providers
+├── AppLayout.tsx       header, tabs and sign out shared by the signed-in pages
 ├── shared/             the HTTP client (errors as problem details, one refresh at a time), icons, formatting
-├── auth/               sign in and sign up, session (`useMe`), route guard
+├── auth/               sign in and sign up, profile, session (`useMe`), route guard
 └── files/              API calls, list, status badges, upload form
 ```
 
@@ -60,3 +64,4 @@ src/
   its component.
 - **The proxy exists in the dev server only.** A production deployment needs a reverse proxy that serves the build and
   forwards `/api` to the API.
+- No automated tests on the interface yet.
