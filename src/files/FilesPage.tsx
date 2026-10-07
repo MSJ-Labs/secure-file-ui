@@ -1,5 +1,6 @@
 import ui from '../shared/ui.module.css'
 import { FileTable } from './FileTable'
+import { UploadForm } from './UploadForm'
 import { useFiles } from './useFiles'
 
 export function FilesPage() {
@@ -8,6 +9,8 @@ export function FilesPage() {
   return (
     <section className={ui.card}>
       <h1>My files</h1>
+
+      <UploadForm />
 
       {isPending && <p className={ui.muted}>Loading…</p>}
       {error && <p role="alert" className={ui.error}>Could not load your files.</p>}
