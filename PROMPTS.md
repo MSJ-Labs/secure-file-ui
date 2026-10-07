@@ -31,3 +31,19 @@ Decisions taken (author's questions, answers and corrections):
 - A 401 is answered by one refresh (`POST /api/v1/auth/refresh`) and one retry of the call. Calls that expire together share the same refresh, so the refresh cookie is not rotated several times. The auth routes are excluded: a wrong password is a 401 that a refresh cannot fix.
 - Refreshing "when the token is about to expire" was not built: it needs the expiry, which the page cannot read, and the API does not return it. It would need `expiresAt` in the login and refresh answers; kept as an improvement.
 - A 401 that survives the refresh ends the session: the query cache of the session is set to `null` and the route guard sends the user back to the sign-in page.
+
+## Prompt 3 — The files list and its polling
+
+~~~~text
+Let's work on the main Files view (/files).
+
+Fetch the user's uploaded files using TanStack Query. Each file has a status (UPLOADING, UPLOAD_FAILED, PENDING, SCANNING, CLEAN, INFECTED, SCAN_FAILED).
+
+Because file scanning happens asynchronously in backend workers, we need to poll for updates. Set up a 3-second polling interval, but make it smart: it should automatically stop polling once all files in the list reach a terminal status (UPLOAD_FAILED, CLEAN, INFECTED, or SCAN_FAILED). Show status badges for each state.
+~~~~
+
+Decisions taken (author's questions, answers and corrections):
+- The list is a query on `GET /api/v1/files` (key `['files']`). Its `refetchInterval` is a function of the data: 3 seconds while at least one file is not final, `false` otherwise, so the polling stops by itself and the page is not busy for nothing. Adding a file later (next step) will restart it by refreshing the query.
+- One badge per status, with a label that a user understands ("Waiting for scan", "Safe", "Infected"…), and a color only for the outcomes: green for safe, red for infected and failures.
+- The download is a plain link to `GET /api/v1/files/{id}/content`, shown only for `CLEAN` files: the cookies travel with it and the API serves an attachment, so the browser streams it to disk without the page holding the file in memory. The API refuses the other files anyway (409).
+- The list is polled, not pushed: no WebSocket, since the API has no push channel and the scans run in workers that may live on other instances.

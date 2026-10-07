@@ -10,6 +10,10 @@ React 19, TypeScript, Vite, TanStack Query and React Router.
 - **Sign in / create an account.** The session lives in HttpOnly cookies set by the API, so the page never sees a token.
   "Who am I" is a query on `/api/v1/users/me`. An expired access token is refreshed once, automatically, and the call is
   retried; when the refresh fails too, the session is over and the user is sent back to the sign-in page.
+- **List and status.** `/files` lists the user's files with a status badge (waiting for scan, scanning, safe, infected,
+  failed). The list is polled every 3 seconds, only while at least one file has not reached a final status.
+- **Download.** Offered only for files that are safe (`CLEAN`). The API serves them as attachments and refuses any
+  other file.
 
 ## Run it
 
@@ -33,12 +37,16 @@ One folder per feature, like the API's bounded contexts:
 ```
 src/
 ├── App.tsx, main.tsx   routes and providers
-├── shared/             the HTTP client (errors as problem details, one refresh at a time), icons
-└── auth/               sign in and sign up, session (`useMe`), route guard
+├── shared/             the HTTP client (errors as problem details, one refresh at a time), icons, formatting
+├── auth/               sign in and sign up, session (`useMe`), route guard
+└── files/              API calls, list, status badges
 ```
 
 ## Choices and limits
 
+- **Polling instead of WebSocket.** The API has no push channel and the scans run in workers that may live on other
+  instances. A status changes within seconds, so a 3 s poll that stops by itself is enough. Server-Sent Events would be
+  the next step if the number of users made polling costly.
 - **The session is refreshed on a 401, not ahead of time.** The page cannot read the expiry of an HttpOnly cookie and
   the API does not return it; refreshing just before it expires would need an `expiresAt` in its answers.
 - **No state library.** Server data is handled by TanStack Query, the session is a query, everything else is local to
