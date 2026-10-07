@@ -1,0 +1,11 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.safe { color: #067647; border-color: #067647; }
+.danger { color: var(--error); border-color: var(--error); }
