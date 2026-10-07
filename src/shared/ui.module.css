@@ -1,0 +1,41 @@
+/* What several features share: the page card, text states, the brand and the two lighter kinds of button. */
+.card {
+  max-width: 760px;
+  margin: 16px auto 48px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.narrow {
+  max-width: 400px;
+  margin-top: 48px;
+}
+
+@media (max-width: 640px) {
+  .card { margin-left: 16px; margin-right: 16px; }
+}
+
+.muted { color: var(--muted); }
+.error { margin: 0; color: var(--error); }
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.secondary {
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.link {
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  text-decoration: underline;
+}
