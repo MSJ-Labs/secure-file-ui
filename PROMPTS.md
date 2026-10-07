@@ -80,3 +80,19 @@ Decisions taken (author's questions, answers and corrections):
 - The message of the API (411, 413, ...) is displayed as it is: it is the one that knows the limit, the page does not duplicate it.
 - An expired access token is refreshed once (the same shared refresh as the other calls) and the upload is sent again, since the XMLHttpRequest does not go through the HTTP client.
 - When the upload succeeds, the list query is invalidated: the new file is already `PENDING` on the server, so it shows up and the status polling starts again.
+
+## Prompt 6 — Layout and navigation
+
+~~~~text
+Let's build the overall layout and navigation:
+
+1. Create an AppLayout with a shared header containing two tabs: Files (/files) and Profile (/profile). The Profile tab shows the data of the signed-in user (/users/me).
+2. Add a Sign Out button in the header that invalidates/clears the TanStack Query cache and redirects back to the sign-in screen.
+~~~~
+
+Decisions taken (author's questions, answers and corrections):
+- The two tabs are real routes (`/files`, `/profile`), rendered inside the layout through the router's outlet, so a page can be opened, reloaded or bookmarked directly. `/` goes to `/files`. The active tab is highlighted by the router (`NavLink`).
+- The route guard wraps the layout: nothing of it is shown to someone who is not signed in.
+- Profile only displays what `/users/me` returns (username, name, email, roles, creation and last sign-in dates), taken from the session query: no extra request.
+- Sign out calls the API, then, whatever the answer, clears the whole query cache, sets the session to `null` and goes back to the sign-in page. The cookies may already be gone, and nothing of the session may stay in memory for the next person using the browser.
+- The header also shows the username and the brand, and the pages no longer need their own way out.

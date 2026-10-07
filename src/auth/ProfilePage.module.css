@@ -1,0 +1,8 @@
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  margin: 16px 0 0;
+}
+.details dt { color: var(--muted); }
+.details dd { margin: 0; overflow-wrap: anywhere; }
