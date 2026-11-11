@@ -23,7 +23,7 @@ Feature-first, like the backend contexts: `src/auth`, `src/files`, `src/shared` 
 - All HTTP calls go through the Axios instance of `shared/lib/axios.ts` (`api`, base URL `/api/v1`); problem details are read with `apiErrorMessage`. A 401 ends the session.
 - The upload streams the `File` as the raw body through Axios (`onUploadProgress`, `signal`); the API needs `Content-Length`, never read a file in memory in the page.
 - Never log file content, names of files in errors sent elsewhere, or anything from the session.
-- TypeScript strict, no `any`. Named exports, no default exports. One component per file. Styling is Tailwind classes only: no inline styles, no other CSS file than `index.css`, which only holds the `@theme` tokens (the ones of trading-ui) and the base of the page. Never put two utilities that set the same property in one class string, Tailwind's order decides, not the string's. `shared/components` know nothing of the domain. Icons come from `lucide-react` (imported where used, `size={18}` next to text).
+- TypeScript strict, no `any`. Named exports, no default exports. One component per file. Styling is Tailwind classes only: no inline styles, no other CSS file than `index.css`, which only holds the `@theme` tokens and the base of the page. Never put two utilities that set the same property in one class string, Tailwind's order decides, not the string's. `shared/components` know nothing of the domain. Icons come from `lucide-react` (imported where used, `size={18}` next to text).
 - Comments explain why, not what. Match the style of the surrounding code.
 
 ## Working rules

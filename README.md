@@ -57,8 +57,8 @@ src/
   the next step if the number of users made polling costly.
 - **No refresh of the session in the page.** A 401 ends it. The API no longer issues its own cookies (authentication is
   moving to Keycloak), so this interface will not handle tokens itself.
-- **Tailwind CSS, dark only.** The classes are in the markup; `src/index.css` only holds the design tokens (`@theme`,
-  the same palette as trading-ui) and the base look of the page. What several features share is in `shared/components`
+- **Tailwind CSS, dark only.** The classes are in the markup; `src/index.css` only holds the design tokens (`@theme`)
+  and the base look of the page. What several features share is in `shared/components`
   (`Button`, `Card`, `Input`, `Brand`). Icons come from lucide-react.
 - **No state library.** Server data is handled by TanStack Query, the session is a query, everything else is local to
   its component.
