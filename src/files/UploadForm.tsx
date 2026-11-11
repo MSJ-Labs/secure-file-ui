@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState, type ChangeEvent } from 'react'
+import { Button } from '../shared/components/Button'
 import { UploadIcon } from '../shared/icons'
 import { apiErrorMessage, isCancelled } from '../shared/lib/axios'
-import ui from '../shared/ui.module.css'
-import styles from './UploadForm.module.css'
 import { uploadFile } from './uploadFile'
 import { FILES_KEY } from './useFiles'
 
@@ -36,22 +35,22 @@ export function UploadForm() {
   const finishing = upload.isPending && percent === 100
 
   return (
-    <section className={styles.upload}>
+    <section className="my-4">
       {/* The native picker cannot be styled: it stays hidden and the button opens it. */}
       <input ref={input} type="file" onChange={onChange} hidden />
-      <button type="button" onClick={() => input.current?.click()} disabled={upload.isPending}>
+      <Button type="button" onClick={() => input.current?.click()} disabled={upload.isPending}>
         <UploadIcon /> Add file
-      </button>
+      </Button>
 
       {upload.isPending && (
-        <div className={styles.progress}>
-          <progress value={percent} max={100} />
-          <span className={ui.muted}>{finishing ? 'Storing the file…' : `${percent}%`}</span>
-          <button type="button" className={ui.link} onClick={() => abort.current?.abort()}>Cancel</button>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <progress className="min-w-40 flex-1 accent-accent" value={percent} max={100} />
+          <span className="text-muted">{finishing ? 'Storing the file…' : `${percent}%`}</span>
+          <Button type="button" variant="link" onClick={() => abort.current?.abort()}>Cancel</Button>
         </div>
       )}
 
-      {upload.isError && !cancelled && <p role="alert" className={ui.error}>{apiErrorMessage(upload.error, 'The upload failed.')}</p>}
+      {upload.isError && !cancelled && <p role="alert" className="text-danger">{apiErrorMessage(upload.error, 'The upload failed.')}</p>}
     </section>
   )
 }

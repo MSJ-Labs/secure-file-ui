@@ -3,7 +3,7 @@
 Web interface of the [secure-file-service](https://github.com/MSJ-Labs/secure-file-service) API: sign in, send files, follow
 their antivirus scan and download them once they are safe.
 
-React 19, TypeScript, Vite, TanStack Query, React Router and Axios.
+React 19, TypeScript, Vite, TanStack Query, React Router, Axios and Tailwind CSS.
 
 ## What it does
 
@@ -57,9 +57,9 @@ src/
   the next step if the number of users made polling costly.
 - **No refresh of the session in the page.** A 401 ends it. The API no longer issues its own cookies (authentication is
   moving to Keycloak), so this interface will not handle tokens itself.
-- **CSS Modules, no CSS framework.** `src/index.css` only holds the color tokens (light and dark themes) and the base
-  look of plain elements; each component has its own `*.module.css`, scoped to it by Vite (what several features share
-  is in `shared/ui.module.css`). Icons are inline SVG, no icon library.
+- **Tailwind CSS, dark only.** The classes are in the markup; `src/index.css` only holds the design tokens (`@theme`,
+  the same palette as trading-ui) and the base look of the page. What several features share is in `shared/components`
+  (`Button`, `Card`, `Input`, `Brand`). Icons are inline SVG, no icon library.
 - **No state library.** Server data is handled by TanStack Query, the session is a query, everything else is local to
   its component.
 - **The proxy exists in the dev server only.** A production deployment needs a reverse proxy that serves the build and
