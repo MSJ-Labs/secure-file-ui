@@ -6,12 +6,12 @@ import { ProfilePage } from './auth/ProfilePage'
 import { RequireAuth } from './auth/RequireAuth'
 import { ME_KEY } from './auth/useMe'
 import { FilesPage } from './files/FilesPage'
-import { ApiError } from './shared/http'
+import { isUnauthorized } from './shared/lib/axios'
 
-// A 401 that survived the automatic refresh means the session is over (refresh token expired or revoked). Forgetting
-// the user sends every protected page back to the sign-in page, instead of leaving it with a failed request.
+// A 401 means the session is over. Forgetting the user sends every protected page back to the sign-in page, instead of
+// leaving it with a failed request.
 function endSessionOnUnauthorized(error: Error) {
-  if (error instanceof ApiError && error.status === 401) queryClient.setQueryData(ME_KEY, null)
+  if (isUnauthorized(error)) queryClient.setQueryData(ME_KEY, null)
 }
 
 const queryClient = new QueryClient({

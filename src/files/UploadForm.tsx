@@ -1,16 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState, type ChangeEvent } from 'react'
-import { ApiError } from '../shared/http'
 import { UploadIcon } from '../shared/icons'
+import { apiErrorMessage, isCancelled } from '../shared/lib/axios'
 import ui from '../shared/ui.module.css'
 import styles from './UploadForm.module.css'
 import { uploadFile } from './uploadFile'
 import { FILES_KEY } from './useFiles'
-
-// The API's own message is shown as it is (411, 413, ...): it is the one that knows the limit.
-function describe(error: unknown): string {
-  return error instanceof ApiError ? error.message : 'The upload failed.'
-}
 
 export function UploadForm() {
   const [percent, setPercent] = useState(0)
@@ -37,7 +32,7 @@ export function UploadForm() {
   }
 
   // A cancelled upload is not an error to show: the person asked for it.
-  const cancelled = upload.error instanceof DOMException && upload.error.name === 'AbortError'
+  const cancelled = isCancelled(upload.error)
   const finishing = upload.isPending && percent === 100
 
   return (
@@ -56,7 +51,7 @@ export function UploadForm() {
         </div>
       )}
 
-      {upload.isError && !cancelled && <p role="alert" className={ui.error}>{describe(upload.error)}</p>}
+      {upload.isError && !cancelled && <p role="alert" className={ui.error}>{apiErrorMessage(upload.error, 'The upload failed.')}</p>}
     </section>
   )
 }

@@ -3,7 +3,7 @@
 Web interface of the `secure-file-service` API (sibling repository): sign in, upload a file, follow its antivirus scan, download it once it is CLEAN. See `README.md` for setup and `PROMPTS.md` for the decisions taken.
 
 ## Stack
-React, TypeScript, Vite, TanStack Query, React Router, CSS Modules. Exact versions live in `package.json` only.
+React, TypeScript, Vite, TanStack Query, React Router, Axios, CSS Modules. Exact versions live in `package.json` only.
 
 ## Commands
 | Purpose | Command |
@@ -15,13 +15,13 @@ React, TypeScript, Vite, TanStack Query, React Router, CSS Modules. Exact versio
 The API must be running for the dev server to be useful (`docker compose up --build` in the backend repository).
 
 ## Code layout
-Feature-first, like the backend contexts: `src/auth`, `src/files`, `src/shared` (HTTP client, formatting, icons, shared styles). `App.tsx` holds the providers and the routes, `AppLayout.tsx` the header shared by the signed-in pages.
+Feature-first, like the backend contexts: `src/auth`, `src/files`, `src/shared` (Axios client in `lib/axios.ts`, formatting, icons, shared styles). `App.tsx` holds the providers and the routes, `AppLayout.tsx` the header shared by the signed-in pages.
 
 ## Rules
 - The browser only talks to the dev server: every call goes to a relative `/api/...` URL, proxied to the backend. Never hard-code the backend origin, never add CORS workarounds. Cookies are HttpOnly and `SameSite=Strict`: the page never reads or stores a token.
 - Server data goes through TanStack Query (the session is a query too). No other state library, no WebSocket: the list is polled only while a file is not in a final status.
-- All HTTP calls go through `shared/http.ts` (problem details as `ApiError`, one shared refresh of the session). A 401 that survives the refresh ends the session.
-- The upload streams the `File` as the raw body (the API needs `Content-Length`); never read a file in memory in the page.
+- All HTTP calls go through the Axios instance of `shared/lib/axios.ts` (`api`, base URL `/api/v1`); problem details are read with `apiErrorMessage`. A 401 ends the session.
+- The upload streams the `File` as the raw body through Axios (`onUploadProgress`, `signal`); the API needs `Content-Length`, never read a file in memory in the page.
 - Never log file content, names of files in errors sent elsewhere, or anything from the session.
 - TypeScript strict, no `any`. Named exports, no default exports. One component per file, styles in a `*.module.css` next to it; `index.css` only holds tokens and base elements. Icons are inline SVG, no icon library.
 - Comments explain why, not what. Match the style of the surrounding code.
