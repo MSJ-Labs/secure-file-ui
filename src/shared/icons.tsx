@@ -1,12 +1,11 @@
 import type { SVGProps } from 'react'
-import styles from './icons.module.css'
 
 // Simple line icons that take the color of the text around them (currentColor), so they follow the light and dark
 // themes. They are decorative: the text next to each one carries the meaning.
 function Icon({ children, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      className={styles.icon}
+      className="shrink-0"
       width="18"
       height="18"
       viewBox="0 0 24 24"

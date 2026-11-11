@@ -2,10 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { login, register } from './api'
+import { Brand } from '../shared/components/Brand'
+import { Button } from '../shared/components/Button'
+import { Card } from '../shared/components/Card'
+import { Input } from '../shared/components/Input'
+import { LoginIcon, UserPlusIcon } from '../shared/icons'
 import { apiErrorMessage } from '../shared/lib/axios'
-import ui from '../shared/ui.module.css'
-import styles from './LoginPage.module.css'
-import { LoginIcon, ShieldIcon, UserPlusIcon } from '../shared/icons'
 import { ME_KEY, useMe } from './useMe'
 
 type Mode = 'login' | 'register'
@@ -44,34 +46,22 @@ export function LoginPage() {
   const error = submit.error ? apiErrorMessage(submit.error, 'Something went wrong.') : null
 
   return (
-    <main className={`${ui.card} ${ui.narrow}`}>
-      <h1 className={ui.brand}><ShieldIcon /> Secure files</h1>
-      <p className={ui.muted}>Files are scanned for viruses before you can download them.</p>
+    <main>
+      <Card narrow>
+        <h1 className="mb-2 text-xl"><Brand /></h1>
+        <p className="text-muted">Files are scanned for viruses before you can download them.</p>
 
-      <form className={styles.form} onSubmit={onSubmit}>
-        <label className={styles.field}>
-          Username
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
-        </label>
-        {mode === 'register' && (
-          <>
-            <label className={styles.field}>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </label>
-            <label className={styles.field}>
-              First name
-              <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            </label>
-            <label className={styles.field}>
-              Last name
-              <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            </label>
-          </>
-        )}
-        <label className={styles.field}>
-          Password
-          <input
+        <form className="my-4 flex flex-col gap-3" onSubmit={onSubmit}>
+          <Input label="Username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
+          {mode === 'register' && (
+            <>
+              <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input label="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <Input label="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </>
+          )}
+          <Input
+            label="Password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -79,22 +69,22 @@ export function LoginPage() {
             minLength={mode === 'register' ? 8 : undefined}
             required
           />
-        </label>
 
-        {error && <p role="alert" className={ui.error}>{error}</p>}
+          {error && <p role="alert" className="text-danger">{error}</p>}
 
-        <button type="submit" disabled={submit.isPending}>
-          {mode === 'login' ? <LoginIcon /> : <UserPlusIcon />}
-          {submit.isPending ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
-        </button>
-      </form>
+          <Button type="submit" disabled={submit.isPending}>
+            {mode === 'login' ? <LoginIcon /> : <UserPlusIcon />}
+            {submit.isPending ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
+          </Button>
+        </form>
 
-      <p className={ui.muted}>
-        {mode === 'login' ? 'No account yet? ' : 'Already registered? '}
-        <button type="button" className={ui.link} onClick={() => { submit.reset(); setMode(mode === 'login' ? 'register' : 'login') }}>
-          {mode === 'login' ? 'Create one' : 'Sign in'}
-        </button>
-      </p>
+        <p className="text-muted">
+          {mode === 'login' ? 'No account yet? ' : 'Already registered? '}
+          <Button type="button" variant="link" onClick={() => { submit.reset(); setMode(mode === 'login' ? 'register' : 'login') }}>
+            {mode === 'login' ? 'Create one' : 'Sign in'}
+          </Button>
+        </p>
+      </Card>
     </main>
   )
 }
