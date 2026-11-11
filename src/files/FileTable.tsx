@@ -1,4 +1,4 @@
-import { DownloadIcon } from '../shared/icons'
+import { Download } from 'lucide-react'
 import { downloadUrl, type StoredFile } from './api'
 import { formatDate, formatSize } from '../shared/format'
 import { StatusBadge } from './StatusBadge'
@@ -30,7 +30,7 @@ export function FileTable({ files }: { files: StoredFile[] }) {
                 {/* Only a scanned file can be downloaded: the API refuses the others anyway. */}
                 {file.status === 'CLEAN' && (
                   <a className="inline-flex items-center gap-1 text-accent hover:underline" href={downloadUrl(file.id)}>
-                    <DownloadIcon /> Download
+                    <Download size={18} /> Download
                   </a>
                 )}
               </td>

@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Files, LogOut, User } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { logout } from './auth/api'
 import { ME_KEY, useMe } from './auth/useMe'
 import { Brand } from './shared/components/Brand'
 import { Button } from './shared/components/Button'
-import { FilesIcon, LogoutIcon, UserIcon } from './shared/icons'
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
   `inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm ${
@@ -35,17 +35,17 @@ export function AppLayout() {
 
         <nav className="flex gap-1" aria-label="Main">
           <NavLink to="/files" className={tabClass}>
-            <FilesIcon /> Files
+            <Files size={18} /> Files
           </NavLink>
           <NavLink to="/profile" className={tabClass}>
-            <UserIcon /> Profile
+            <User size={18} /> Profile
           </NavLink>
         </nav>
 
         <span className="inline-flex items-center gap-3">
           <span className="text-muted">{user?.username}</span>
           <Button type="button" variant="secondary" onClick={() => signOut.mutate()} disabled={signOut.isPending}>
-            <LogoutIcon /> Sign out
+            <LogOut size={18} /> Sign out
           </Button>
         </span>
       </header>

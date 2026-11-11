@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Upload } from 'lucide-react'
 import { useRef, useState, type ChangeEvent } from 'react'
 import { Button } from '../shared/components/Button'
-import { UploadIcon } from '../shared/icons'
 import { apiErrorMessage, isCancelled } from '../shared/lib/axios'
 import { uploadFile } from './uploadFile'
 import { FILES_KEY } from './useFiles'
@@ -39,7 +39,7 @@ export function UploadForm() {
       {/* The native picker cannot be styled: it stays hidden and the button opens it. */}
       <input ref={input} type="file" onChange={onChange} hidden />
       <Button type="button" onClick={() => input.current?.click()} disabled={upload.isPending}>
-        <UploadIcon /> Add file
+        <Upload size={18} /> Add file
       </Button>
 
       {upload.isPending && (
