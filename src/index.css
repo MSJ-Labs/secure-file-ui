@@ -1,5 +1,5 @@
 /* Only what the whole application shares: the design tokens and the base look of the page. Components are styled with
-   Tailwind classes, in their markup. The tokens are the ones of trading-ui, so both interfaces look alike. */
+   Tailwind classes, in their markup. */
 @import 'tailwindcss';
 
 @theme {
