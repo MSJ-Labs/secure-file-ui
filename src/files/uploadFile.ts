@@ -16,6 +16,9 @@ export async function uploadFile(
 ): Promise<UploadedFile> {
   const response = await api.put<UploadedFile>('/files', file, {
     params: { name: file.name },
+    // Raw bytes, whatever the file is: Axios would otherwise send a PUT as a form, and a server that parses forms would
+    // try to decode the file.
+    headers: { 'Content-Type': 'application/octet-stream' },
     signal,
     onUploadProgress: ({ progress }) => {
       if (progress !== undefined) onProgress(Math.round(progress * 100))
