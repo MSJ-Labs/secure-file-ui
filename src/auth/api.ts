@@ -1,31 +1,21 @@
-import { api } from '../shared/lib/axios'
+import { bff, root } from '../shared/lib/axios'
 
 export interface UserProfile {
-  id: string
+  sub: string
   username: string
-  email: string
-  firstName: string | null
-  lastName: string | null
-  fullName: string
+  name: string | null
+  givenName: string | null
+  familyName: string | null
+  email: string | null
+  emailVerified: boolean | null
   roles: string[]
-  createdAt: string
-  lastLoginAt: string | null
 }
 
-export interface RegisterInput {
-  username: string
-  email: string
-  password: string
-  firstName: string
-  lastName: string
+interface LogoutResponse {
+  logoutUrl: string
 }
 
-export const login = (username: string, password: string) =>
-  api.post<UserProfile>('/auth/login', { username, password }).then((response) => response.data)
+export const fetchMe = () => bff.get<UserProfile>('/user').then((response) => response.data)
 
-export const register = (input: RegisterInput) =>
-  api.post<UserProfile>('/auth/register', input).then((response) => response.data)
-
-export const logout = () => api.post('/auth/logout')
-
-export const fetchMe = () => api.get<UserProfile>('/users/me').then((response) => response.data)
+// Ends the BFF session and answers with Keycloak's end-session URL.
+export const logout = () => root.post<LogoutResponse>('/logout').then((response) => response.data)

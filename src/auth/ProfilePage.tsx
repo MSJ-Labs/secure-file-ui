@@ -1,5 +1,4 @@
 import { Card } from '../shared/components/Card'
-import { formatDate } from '../shared/format'
 import { useMe } from './useMe'
 
 export function ProfilePage() {
@@ -13,15 +12,11 @@ export function ProfilePage() {
         <dt className="text-muted">Username</dt>
         <dd className="wrap-anywhere">{user.username}</dd>
         <dt className="text-muted">Name</dt>
-        <dd className="wrap-anywhere">{user.fullName || '—'}</dd>
+        <dd className="wrap-anywhere">{user.name || '—'}</dd>
         <dt className="text-muted">Email</dt>
-        <dd className="wrap-anywhere">{user.email}</dd>
+        <dd className="wrap-anywhere">{user.email || '—'}</dd>
         <dt className="text-muted">Roles</dt>
-        <dd className="wrap-anywhere">{user.roles.join(', ')}</dd>
-        <dt className="text-muted">Member since</dt>
-        <dd className="wrap-anywhere">{formatDate(user.createdAt)}</dd>
-        <dt className="text-muted">Last sign-in</dt>
-        <dd className="wrap-anywhere">{user.lastLoginAt ? formatDate(user.lastLoginAt) : '—'}</dd>
+        <dd className="wrap-anywhere">{user.roles.join(', ') || '—'}</dd>
       </dl>
     </Card>
   )

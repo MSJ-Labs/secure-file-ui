@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Files, LogOut, User } from 'lucide-react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { logout } from './auth/api'
-import { ME_KEY, useMe } from './auth/useMe'
+import { useMe } from './auth/useMe'
 import { Brand } from './shared/components/Brand'
 import { Button } from './shared/components/Button'
 
@@ -15,16 +15,14 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
 export function AppLayout() {
   const { data: user } = useMe()
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
 
   const signOut = useMutation({
     mutationFn: logout,
-    // Whatever the answer: the cookies may be gone already, and nothing of this session may stay in the cache for the
-    // next person who signs in on this browser.
-    onSettled: () => {
+    onSuccess: ({ logoutUrl }) => {
+      // Nothing of this session may stay in the cache for the next person who signs in on this browser.
       queryClient.clear()
-      queryClient.setQueryData(ME_KEY, null)
-      navigate('/login', { replace: true })
+      // Full-page navigation: Keycloak closes its own session, then sends the browser back here.
+      window.location.assign(logoutUrl)
     },
   })
 
