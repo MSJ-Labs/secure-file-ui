@@ -1,9 +1,9 @@
-import { ShieldIcon } from '../icons'
+import { ShieldCheck } from 'lucide-react'
 
 export function Brand() {
   return (
     <span className="inline-flex items-center gap-2 font-semibold">
-      <ShieldIcon /> Secure files
+      <ShieldCheck size={18} /> Secure files
     </span>
   )
 }

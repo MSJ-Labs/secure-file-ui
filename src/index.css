@@ -17,6 +17,11 @@
   color-scheme: dark;
 }
 
+/* The icons sit next to text in flex rows: they must keep their size when the text is long. */
+svg.lucide {
+  flex: none;
+}
+
 body {
   background-color: var(--color-background);
   color: #ffffff;

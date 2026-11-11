@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { LogIn, UserPlus } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { login, register } from './api'
@@ -6,7 +7,6 @@ import { Brand } from '../shared/components/Brand'
 import { Button } from '../shared/components/Button'
 import { Card } from '../shared/components/Card'
 import { Input } from '../shared/components/Input'
-import { LoginIcon, UserPlusIcon } from '../shared/icons'
 import { apiErrorMessage } from '../shared/lib/axios'
 import { ME_KEY, useMe } from './useMe'
 
@@ -73,7 +73,7 @@ export function LoginPage() {
           {error && <p role="alert" className="text-danger">{error}</p>}
 
           <Button type="submit" disabled={submit.isPending}>
-            {mode === 'login' ? <LoginIcon /> : <UserPlusIcon />}
+            {mode === 'login' ? <LogIn size={18} /> : <UserPlus size={18} />}
             {submit.isPending ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
           </Button>
         </form>

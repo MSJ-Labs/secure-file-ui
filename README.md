@@ -3,7 +3,7 @@
 Web interface of the [secure-file-service](https://github.com/MSJ-Labs/secure-file-service) API: sign in, send files, follow
 their antivirus scan and download them once they are safe.
 
-React 19, TypeScript, Vite, TanStack Query, React Router, Axios and Tailwind CSS.
+React 19, TypeScript, Vite, TanStack Query, React Router, Axios, Tailwind CSS and lucide-react.
 
 ## What it does
 
@@ -44,7 +44,7 @@ One folder per feature, like the API's bounded contexts:
 src/
 ├── App.tsx, main.tsx   routes and providers
 ├── AppLayout.tsx       header, tabs and sign out shared by the signed-in pages
-├── shared/             the Axios client (`lib/axios.ts`, errors as problem details), icons, formatting
+├── shared/             the Axios client (`lib/axios.ts`, errors as problem details), `components/`, formatting
 ├── auth/               sign in and sign up, profile, session (`useMe`), route guard
 └── files/              API calls, list, status badges, upload form
 ```
@@ -59,7 +59,7 @@ src/
   moving to Keycloak), so this interface will not handle tokens itself.
 - **Tailwind CSS, dark only.** The classes are in the markup; `src/index.css` only holds the design tokens (`@theme`,
   the same palette as trading-ui) and the base look of the page. What several features share is in `shared/components`
-  (`Button`, `Card`, `Input`, `Brand`). Icons are inline SVG, no icon library.
+  (`Button`, `Card`, `Input`, `Brand`). Icons come from lucide-react.
 - **No state library.** Server data is handled by TanStack Query, the session is a query, everything else is local to
   its component.
 - **The proxy exists in the dev server only.** A production deployment needs a reverse proxy that serves the build and
