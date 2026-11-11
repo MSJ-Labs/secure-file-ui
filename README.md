@@ -3,13 +3,13 @@
 Web interface of the [secure-file-service](https://github.com/MSJ-Labs/secure-file-service) API: sign in, send files, follow
 their antivirus scan and download them once they are safe.
 
-React 19, TypeScript, Vite, TanStack Query and React Router.
+React 19, TypeScript, Vite, TanStack Query, React Router and Axios.
 
 ## What it does
 
 - **Sign in / create an account.** The session lives in HttpOnly cookies set by the API, so the page never sees a token.
-  "Who am I" is a query on `/api/v1/users/me`. An expired access token is refreshed once, automatically, and the call is
-  retried; when the refresh fails too, the session is over and the user is sent back to the sign-in page.
+  "Who am I" is a query on `/api/v1/users/me`. A 401 means the session is over and the user is sent back to the sign-in
+  page.
 - **Navigation.** Two tabs, Files and Profile, are real routes (`/files`, `/profile`) under a shared header. Profile
   shows the data of the signed-in user. Signing out clears everything cached for the session and goes back to the
   sign-in page.
@@ -44,7 +44,7 @@ One folder per feature, like the API's bounded contexts:
 src/
 ├── App.tsx, main.tsx   routes and providers
 ├── AppLayout.tsx       header, tabs and sign out shared by the signed-in pages
-├── shared/             the HTTP client (errors as problem details, one refresh at a time), icons, formatting
+├── shared/             the Axios client (`lib/axios.ts`, errors as problem details), icons, formatting
 ├── auth/               sign in and sign up, profile, session (`useMe`), route guard
 └── files/              API calls, list, status badges, upload form
 ```
@@ -55,8 +55,8 @@ src/
 - **Polling instead of WebSocket.** The API has no push channel and the scans run in workers that may live on other
   instances. A status changes within seconds, so a 3 s poll that stops by itself is enough. Server-Sent Events would be
   the next step if the number of users made polling costly.
-- **The session is refreshed on a 401, not ahead of time.** The page cannot read the expiry of an HttpOnly cookie and
-  the API does not return it; refreshing just before it expires would need an `expiresAt` in its answers.
+- **No refresh of the session in the page.** A 401 ends it. The API no longer issues its own cookies (authentication is
+  moving to Keycloak), so this interface will not handle tokens itself.
 - **CSS Modules, no CSS framework.** `src/index.css` only holds the color tokens (light and dark themes) and the base
   look of plain elements; each component has its own `*.module.css`, scoped to it by Vite (what several features share
   is in `shared/ui.module.css`). Icons are inline SVG, no icon library.

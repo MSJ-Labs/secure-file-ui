@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { login, register } from './api'
-import { ApiError } from '../shared/http'
+import { apiErrorMessage } from '../shared/lib/axios'
 import ui from '../shared/ui.module.css'
 import styles from './LoginPage.module.css'
 import { LoginIcon, ShieldIcon, UserPlusIcon } from '../shared/icons'
@@ -41,7 +41,7 @@ export function LoginPage() {
     submit.mutate()
   }
 
-  const error = submit.error instanceof ApiError ? submit.error.message : submit.error ? 'Something went wrong.' : null
+  const error = submit.error ? apiErrorMessage(submit.error, 'Something went wrong.') : null
 
   return (
     <main className={`${ui.card} ${ui.narrow}`}>

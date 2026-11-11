@@ -1,4 +1,4 @@
-import { jsonBody, request, requestJson } from '../shared/http'
+import { api } from '../shared/lib/axios'
 
 export interface UserProfile {
   id: string
@@ -21,11 +21,11 @@ export interface RegisterInput {
 }
 
 export const login = (username: string, password: string) =>
-  requestJson<UserProfile>('/api/v1/auth/login', jsonBody('POST', { username, password }))
+  api.post<UserProfile>('/auth/login', { username, password }).then((response) => response.data)
 
 export const register = (input: RegisterInput) =>
-  requestJson<UserProfile>('/api/v1/auth/register', jsonBody('POST', input))
+  api.post<UserProfile>('/auth/register', input).then((response) => response.data)
 
-export const logout = () => request('/api/v1/auth/logout', { method: 'POST' })
+export const logout = () => api.post('/auth/logout')
 
-export const fetchMe = () => requestJson<UserProfile>('/api/v1/users/me')
+export const fetchMe = () => api.get<UserProfile>('/users/me').then((response) => response.data)

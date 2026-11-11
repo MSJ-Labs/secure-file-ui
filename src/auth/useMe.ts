@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ApiError } from '../shared/http'
+import { isUnauthorized } from '../shared/lib/axios'
 import { fetchMe, type UserProfile } from './api'
 
 export const ME_KEY = ['me'] as const
@@ -13,7 +13,7 @@ export function useMe() {
       try {
         return await fetchMe()
       } catch (error) {
-        if (error instanceof ApiError && error.status === 401) return null
+        if (isUnauthorized(error)) return null
         throw error
       }
     },
