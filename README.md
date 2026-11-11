@@ -7,12 +7,12 @@ React 19, TypeScript, Vite, TanStack Query, React Router, Axios, Tailwind CSS an
 
 ## What it does
 
-- **Sign in / create an account.** The session lives in HttpOnly cookies set by the API, so the page never sees a token.
-  "Who am I" is a query on `/api/v1/users/me`. A 401 means the session is over and the user is sent back to the sign-in
-  page.
+- **Sign in through Keycloak.** The page has no sign-in form: the BFF (backend for frontend) runs the OAuth2 login and
+  keeps the tokens, the browser only holds a session cookie, so the page never sees a token. "Who am I" is a query on
+  `/bff/user`. A 401 means there is no session: the browser is sent to `/oauth2/authorization/keycloak`.
 - **Navigation.** Two tabs, Files and Profile, are real routes (`/files`, `/profile`) under a shared header. Profile
-  shows the data of the signed-in user. Signing out clears everything cached for the session and goes back to the
-  sign-in page.
+  shows the data of the signed-in user. Signing out calls `POST /logout` (with the `X-XSRF-TOKEN` header), clears the
+  cache and goes to the Keycloak end-session URL the BFF answers with.
 - **Upload.** The file is the body of a `PUT /api/v1/files?name=…` request, streamed from disk by the browser, with a
   progress bar and a cancel button. The API refuses a body of unknown length (411) or above its limit (413); the message
   is shown as is.
@@ -23,16 +23,18 @@ React 19, TypeScript, Vite, TanStack Query, React Router, Axios, Tailwind CSS an
 
 ## Run it
 
-The API has to be running first (see its README: `docker compose up --build`, on `http://localhost:8080`).
+The API and its BFF have to be running first: the API (see its README: `docker compose up --build`), Keycloak, and the
+BFF on `http://localhost:8083`, with a route `/api/v1/files/**` to the API and a confidential Keycloak client for this
+interface.
 
 ```
 npm install
 npm run dev
 ```
 
-Then open <http://localhost:5173>. The dev server forwards `/api` to the API (`vite.config.ts`), so the browser only
-talks to one origin and the `HttpOnly` `SameSite=Strict` cookies of the API are sent without any CORS setup. To point it
-at another API, change the target of that proxy.
+Then open <http://localhost:5173>. The dev server forwards `/api`, `/bff`, `/oauth2` and `/logout` to the BFF (`vite.config.ts`), so the browser only
+talks to one origin and the session cookie is sent without any CORS setup. To point it at another BFF, change the
+target of that proxy.
 
 Other commands: `npm run build` (type check and production bundle in `dist/`), `npm run lint`.
 
@@ -45,7 +47,7 @@ src/
 ├── App.tsx, main.tsx   routes and providers
 ├── AppLayout.tsx       header, tabs and sign out shared by the signed-in pages
 ├── shared/             the Axios client (`lib/axios.ts`, errors as problem details), `components/`, formatting
-├── auth/               sign in and sign up, profile, session (`useMe`), route guard
+├── auth/               profile, session (`useMe`), route guard
 └── files/              API calls, list, status badges, upload form
 ```
 
@@ -55,13 +57,13 @@ src/
 - **Polling instead of WebSocket.** The API has no push channel and the scans run in workers that may live on other
   instances. A status changes within seconds, so a 3 s poll that stops by itself is enough. Server-Sent Events would be
   the next step if the number of users made polling costly.
-- **No refresh of the session in the page.** A 401 ends it. The API no longer issues its own cookies (authentication is
-  moving to Keycloak), so this interface will not handle tokens itself.
+- **No tokens in the page.** The BFF refreshes them; a 401 means the session is over and starts a new sign-in. The BFF
+  is not part of this repository.
 - **Tailwind CSS, dark only.** The classes are in the markup; `src/index.css` only holds the design tokens (`@theme`)
   and the base look of the page. What several features share is in `shared/components`
   (`Button`, `Card`, `Input`, `Brand`). Icons come from lucide-react.
 - **No state library.** Server data is handled by TanStack Query, the session is a query, everything else is local to
   its component.
 - **The proxy exists in the dev server only.** A production deployment needs a reverse proxy that serves the build and
-  forwards `/api` to the API.
+  forwards `/api`, `/bff`, `/oauth2` and `/logout` to the BFF.
 - No automated tests on the interface yet.
